@@ -1,17 +1,33 @@
-from src.utils.clean_data import clean_data
 import dash
 from dash import html, dcc
-import plotly.express as px
+from dash.dependencies import Input, Output
+from src.pages import home
+from config import CONFIG
 
-df = clean_data()
+# Initialisation de l'app
+app = dash.Dash(__name__, suppress_callback_exceptions=True)
+server = app.server
 
-fig = px.line(df, x="date", y="hosp", title="Évolution des hospitalisations COVID-19")
-
-app = dash.Dash(__name__)
+# Layout global
 app.layout = html.Div([
-    html.H1("Dashboard COVID-19 France", style={'textAlign': 'center'}),
-    dcc.Graph(figure=fig)
+    dcc.Location(id='url', refresh=False),
+    html.Div(id='page-content')
 ])
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# Navigation simple (multi-page)
+@app.callback(
+    Output('page-content', 'children'),
+    Input('url', 'pathname')
+)
+def display_page(pathname):
+    if pathname == '/':
+        return home.layout
+    return html.H1("404 - Page non trouvée")
+
+# Lancement
+if __name__ == '__main__':
+    app.run(
+        host=CONFIG['APP_HOST'],
+        port=CONFIG['APP_PORT'],
+        debug=CONFIG['DEBUG']
+    )
