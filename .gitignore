@@ -1,2 +1,13 @@
+# venv
 .venv/
+
+# Config IDE JetBrains
 .idea/
+
+# pycache
+__pycache__/
+*/__pycache__/
+*/ */__pycache__/
+
+# Fichiers pyc
+*.pyc
