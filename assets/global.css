@@ -1,0 +1,37 @@
+.container {
+    max-width: 900px; 
+    margin: 0 auto;
+    padding: 20px;        
+    text-align: center;  
+    font-family: "Open Sans", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;  /* centre le texte et les composants inline */
+}
+
+/* Statistiques container */
+.stats-container {
+    display: flex;
+    margin-top: 30px;
+    gap: 20px;    
+}
+
+.stat-box {
+    display: flex;
+    flex: 1;
+    gap: 10px;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.stat-number {
+    font-size: 48px;
+    font-weight: 700;
+    margin-right: 15px;
+}
+
+.stat-text {
+    font-size: 16px;
+    color: #555;
+}
