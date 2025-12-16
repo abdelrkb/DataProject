@@ -1,8 +1,8 @@
-import sys
 import os
 import pandas as pd
 from config import CONFIG
 from src.utils.get_data import get_raw_data
+
 
 def clean_data(save=True):
     """
@@ -11,8 +11,15 @@ def clean_data(save=True):
     df = get_raw_data()
 
     cols_to_drop = [
-        "R", "TO", "cv_dose1", "tx_pos", "tx_incid", "pos_7j",
-        "pos", "reg_rea", "reg_incid_rea"
+        "R",
+        "TO",
+        "cv_dose1",
+        "tx_pos",
+        "tx_incid",
+        "pos_7j",
+        "pos",
+        "reg_rea",
+        "reg_incid_rea",
     ]
     df = df.drop(columns=[c for c in cols_to_drop if c in df.columns], errors="ignore")
 

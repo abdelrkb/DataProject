@@ -1,6 +1,5 @@
-import pandas as pd
-from config import CONFIG
 from src.utils.clean_data import clean_data
+
 
 class DataStore:
     df = None

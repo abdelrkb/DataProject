@@ -1,12 +1,10 @@
-from dash import html, dcc, Input, Output, callback
+from dash import html, dcc, Input, Output
 import plotly.express as px
-import pandas as pd
-from config import CONFIG
-from src.components.core.base_component import BaseComponent
+from src.components.base.base_component import BaseComponent
 from src.services.hospitalisations_service import HospitalisationService
 
-class HospitalisationsComponent(BaseComponent):
 
+class HospitalisationsComponent(BaseComponent):
     def __init__(self):
         super().__init__(HospitalisationService())
 
@@ -19,7 +17,6 @@ class HospitalisationsComponent(BaseComponent):
                     "Évolution des hospitalisations COVID-19 par région",
                     style={"textAlign": "center"},
                 ),
-
                 dcc.Dropdown(
                     id="region-dropdown",
                     options=[{"label": r, "value": r} for r in regions],
@@ -27,13 +24,11 @@ class HospitalisationsComponent(BaseComponent):
                     clearable=False,
                     style={"width": "60%", "margin": "auto"},
                 ),
-
                 dcc.Graph(id="hospitalisation-graph"),
             ]
         )
 
     def register_callbacks(self, app):
-
         @app.callback(
             Output("hospitalisation-graph", "figure"),
             Input("region-dropdown", "value"),

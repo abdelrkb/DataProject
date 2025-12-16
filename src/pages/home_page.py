@@ -2,24 +2,23 @@ from dash import html
 from src.components.header import header_component
 from src.components.stats_component import StatsComponent
 from src.components.hospitalisations_component import HospitalisationsComponent
-from src.pages.base_page import BasePage
+from src.pages.base.base_page import BasePage
 
-class HomePage(BasePage): 
-    
-    stats_component = StatsComponent()
-    hospitalisations_component = HospitalisationsComponent()
 
-    layout = html.Div([
-        header_component,
-        stats_component.layout(),
-        hospitalisations_component.layout()
-    ],
-    className="container" 
-    )
+class HomePage(BasePage):
+    def __init__(self):
+        self.stats_component = StatsComponent()
+        self.hospitalisations_component = HospitalisationsComponent()
 
-    def register_callbacks(app):
-        stats = StatsComponent()
-        hospitalisations = HospitalisationsComponent()
+    def layout(self):
+        return html.Div(
+            [
+                header_component,
+                self.stats_component.layout(),
+                self.hospitalisations_component.layout(),
+            ],
+            className="container",
+        )
 
-        stats.register_callbacks(app)
-        hospitalisations.register_callbacks(app)
+    def register_callbacks(self, app):
+        self.hospitalisations_component.register_callbacks(app)

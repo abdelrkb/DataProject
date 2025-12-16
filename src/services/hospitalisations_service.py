@@ -1,8 +1,8 @@
-from src.services.core.base_service import BaseService
+from src.services.base.base_service import BaseService
+
 
 class HospitalisationService(BaseService):
-
-    def __init__(self) :
+    def __init__(self):
         super().__init__()
 
     def available_regions(self):
@@ -11,8 +11,4 @@ class HospitalisationService(BaseService):
     def hospitalisations_by_region(self, region):
         filtered_df = self.df[self.df["lib_reg"] == region]
 
-        return (
-            filtered_df
-            .groupby("date", as_index=False)[["hosp"]]
-            .sum()
-        )
+        return filtered_df.groupby("date", as_index=False)[["hosp"]].sum()

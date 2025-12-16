@@ -1,6 +1,7 @@
 import pandas as pd
 from config import CONFIG
 
+
 def get_raw_data() -> pd.DataFrame:
     """
     Charge le dataset brut depuis data/raw/.

@@ -1,14 +1,14 @@
 from dash import html
-from src.components.core.base_component import BaseComponent
+from src.components.base.base_component import BaseComponent
 from src.services.stats_service import StatsService
 
-class StatsComponent(BaseComponent) :
-    
+
+class StatsComponent(BaseComponent):
     def __init__(self, service=None):
         super().__init__(StatsService())
 
-    def layout(self) : 
-      return  html.Div(
+    def layout(self):
+        return html.Div(
             [
                 html.Div(
                     [
@@ -17,7 +17,6 @@ class StatsComponent(BaseComponent) :
                     ],
                     className="stat-box",
                 ),
-
                 html.Div(
                     [
                         html.Div("40+", className="stat-number"),
@@ -25,7 +24,6 @@ class StatsComponent(BaseComponent) :
                     ],
                     className="stat-box",
                 ),
-
                 html.Div(
                     [
                         html.Div("160k", className="stat-number"),
