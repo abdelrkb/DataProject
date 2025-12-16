@@ -24,6 +24,7 @@ def display_page(pathname):
         return home.layout
     return html.H1("404 - Page non trouvée")
 
+home.register_callbacks(app)
 # Lancement
 if __name__ == '__main__':
     app.run(
