@@ -3,6 +3,7 @@ from config import CONFIG
 from src.utils.get_data import get_raw_data
 import os
 
+
 def clean_data(save=True):
     """
     Nettoie les données brutes COVID et retourne un DataFrame propre.
