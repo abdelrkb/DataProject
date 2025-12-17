@@ -3,5 +3,5 @@ services:
     name: covid-dashboard
     env: python
     plan: free
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -r requirements-dev.txt
     startCommand: gunicorn main:server
