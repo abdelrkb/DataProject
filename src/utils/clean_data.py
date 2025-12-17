@@ -1,8 +1,7 @@
 import pandas as pd
 from config import CONFIG
 from src.utils.get_data import get_raw_data
-from pathlib import Path
-
+import os
 
 def clean_data(save=True):
     """
@@ -31,8 +30,8 @@ def clean_data(save=True):
     df["taux_rea"] = df["rea"] / (df["hosp"] + 1) * 100
 
     if save:
-        output_path: Path = CONFIG["DATA_PATH"]["CLEANED"]
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        df.to_csv(output_path, index=False)
+        output_dir = os.path.dirname(CONFIG["DATA_PATH"]["CLEANED"])
+        os.makedirs(output_dir, exist_ok=True)
+        df.to_csv(CONFIG["DATA_PATH"]["CLEANED"], index=False)
 
     return df
