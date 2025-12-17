@@ -14,6 +14,7 @@ exclude = [
     "venv",
     "config.py",
     "readme.md",
+    "render.yaml",
     "contributing.md",
     "requirements.txt",
     ".pre-commit-config.yaml"

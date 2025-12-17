@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: covid-dashboard
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements-dev.txt
+    startCommand: gunicorn main:server
