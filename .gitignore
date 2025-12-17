@@ -8,6 +8,12 @@
 __pycache__/
 */__pycache__/
 */ */__pycache__/
+/src/utils/__pycache__/
 
 # Fichiers pyc
 *.pyc
+
+#cache
+.pytest_cache
+.ruff_cache
+.coverage
