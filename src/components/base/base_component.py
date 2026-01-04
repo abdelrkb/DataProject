@@ -6,6 +6,8 @@ class BaseComponent(ABC):
     def __init__(self, service=None):
         self.service = service
         self.reference_service = ReferenceService()
+        self.regions = self.reference_service.available_regions()
+        self.departements = self.reference_service.available_dep()
 
     def cid(self, name: str) -> str:
         """

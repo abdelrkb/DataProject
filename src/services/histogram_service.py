@@ -14,13 +14,18 @@ class HistogramService(BaseService):
         """
         Docstring pour hosp_distribution
 
-        :param self: Description
-        :param region: Description
-        :param dep: Description
+        :param region: string
+        :param dep: string
         """
         hosp_df = filter_by_geo(self.df, region=region, dep=dep)
         return hosp_df.groupby("date", as_index=False)[["hosp"]].sum()
 
     def taux_mortalite_distribution(self, region=None, dep=None):
+        """
+        Docstring pour taux_mortalite_distribution
+
+        :param region: string
+        :param dep: string
+        """
         df = filter_by_geo(self.df, region, dep)
         return df[["taux_mortalite"]].dropna()

@@ -1,44 +1,43 @@
 from dash import html, dcc, Input, Output
 import plotly.express as px
-
 from src.components.base.base_component import BaseComponent
-from src.services.histogram_service import HistogramService
+from src.services.graphs_service import GraphService
 
 
-class HistogramComponent(BaseComponent):
+class GraphsComponent(BaseComponent):
     """
-    Crée un composant Dash pour afficher des histogrammes des indicateurs COVID-19
+    Crée un composant Dash pour afficher des graphs des indicateurs COVID-19
     """
 
     def __init__(self):
-        super().__init__(service=HistogramService())
-        # Dictionnaire des méthodes d'histogramme, utilisé pour générer les callbacks et layouts
-        self.histogram_methods = {
-            "hosp": {
-                "label": "Hospitalisation",
+        super().__init__(GraphService())
+
+        self.graphs_methods = {
+            "hospitalisations": {
+                "label": "Hospitalisations COVID-19",
                 "column": "hosp",
-                "method": self.service.hosp_distribution,
+                "method": self.service.hospitalisations,
             },
             "taux_mortalite": {
-                "label": "Taux de mortalité (%)",
+                "label": "Taux de mortalité COVID-19 (%)",
                 "column": "taux_mortalite",
-                "method": self.service.taux_mortalite_distribution,
+                "method": self.service.taux_mortalite,
             },
         }
 
     def layout(self):
         """
-        Layout HTML du composant Histogramme
+        Composant HTML pour les graphs des hospitalisations COVID-19
         """
         return html.Div(
             [
                 html.H3(
-                    "Histogramme indicateur du COVID-19", style={"textAlign": "center"}
+                    "Graphiques indicateurs du COVID-19", style={"textAlign": "center"}
                 ),
                 html.Div(
                     [
-                        self.histogram_card(key, config)
-                        for key, config in self.histogram_methods.items()
+                        self.graph_card(key, config)
+                        for key, config in self.graphs_methods.items()
                     ],
                     style={
                         "display": "grid",
@@ -50,14 +49,14 @@ class HistogramComponent(BaseComponent):
             ]
         )
 
-    def histogram_card(self, key, config):
+    def graph_card(self, key, config):
         """
-        Carte HTML pour un histogramme spécifique
+        Docstring pour graph_card
 
-         :param key: clé dans le dict histogram_methods
-         :param config: config dans le dict key
+        :param key: clé dans le dict graphs_methods
+        :param config: config dans le dict key
 
-         :return: html.Div
+        :return: html.Div
         """
         return html.Div(
             [
@@ -99,7 +98,7 @@ class HistogramComponent(BaseComponent):
         )
 
     def register_callbacks(self, app):
-        for key, config in self.histogram_methods.items():
+        for key, config in self.graphs_methods.items():
 
             @app.callback(
                 Output(self.cid(f"{key}-region"), "disabled"),
@@ -126,20 +125,14 @@ class HistogramComponent(BaseComponent):
                     df = conf["method"]()
                     label = "France entière"
 
-                fig = px.histogram(
+                fig = px.line(
                     df,
-                    x=conf["column"],
-                    nbins=30,
+                    x="date",
+                    y=conf["column"],
                     title=f"{conf['label']} — {label}",
-                    labels={
-                        conf["column"]: conf["label"],
-                        "count": "Nombre de jours",
-                    },
+                    labels={conf["column"]: conf["label"], "date": "Date"},
                     template="plotly_white",
                 )
-                fig.update_layout(
-                    title_x=0.5,
-                    yaxis_title="Nombre de jours",
-                )
+                fig.update_layout(title_x=0.5)
 
                 return fig
