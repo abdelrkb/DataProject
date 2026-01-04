@@ -7,3 +7,6 @@ Plotly v6.3.0 Aug 12 2025
 
  Pour participer insytaller pre commit : 
  pre-commit install
+ ref cartes:https://france-geojson.gregoiredavid.fr
+
+ 
