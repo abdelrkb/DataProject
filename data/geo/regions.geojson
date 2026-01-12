@@ -2342,7 +2342,7 @@
       },
       "properties": {
         "code": "27",
-        "nom": "Bourgogne-Franche-Comté"
+        "nom": "Bourgogne et Franche-Comté"
       }
     },
     {
@@ -8614,7 +8614,7 @@
       },
       "properties": {
         "code": "75",
-        "nom": "Nouvelle-Aquitaine"
+        "nom": "Nouvelle Aquitaine"
       }
     },
     {
@@ -13055,7 +13055,7 @@
       },
       "properties": {
         "code": "84",
-        "nom": "Auvergne-Rhône-Alpes"
+        "nom": "Auvergne et Rhône-Alpes"
       }
     },
     {

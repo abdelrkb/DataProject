@@ -47,3 +47,15 @@ def available_dep(df):
     values = df["lib_dep"].dropna().unique().tolist()
 
     return sorted(values)
+
+
+def filter_by_date(df, start_date=None, end_date=None):
+    print(start_date)
+    print(end_date)
+    if start_date:
+        df = df[df["date"] >= start_date]
+
+    if end_date:
+        df = df[df["date"] <= end_date]
+
+    return df
