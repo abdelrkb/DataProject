@@ -10,7 +10,9 @@ class GraphService(BaseService):
         hosp_df = filter_by_geo(self.df, region=region, dep=dep)
         return hosp_df.groupby("date", as_index=False)[["hosp"]].sum()
 
-    def reanimations_mensuelles(self, region: str | None = None, dep: str | None = None):
+    def reanimations_mensuelles(
+        self, region: str | None = None, dep: str | None = None
+    ):
         df = filter_by_geo(self.df, region, dep)
         df = df.copy()
         df["month"] = df["date"].dt.to_period("M").dt.to_timestamp()
