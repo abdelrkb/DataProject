@@ -10,22 +10,26 @@ class HistogramService(BaseService):
     def __init__(self):
         super().__init__()
 
-    def hosp_distribution(self, region=None, dep=None):
+    def hosp_par_mois(self, region=None, dep=None):
         """
-        Docstring pour hosp_distribution
+        Hospitalisations moyennes par mois.
 
         :param region: string
         :param dep: string
         """
-        hosp_df = filter_by_geo(self.df, region=region, dep=dep)
-        return hosp_df.groupby("date", as_index=False)[["hosp"]].sum()
+        df = filter_by_geo(self.df, region=region, dep=dep)
+        df = df.copy()
+        df["mois"] = df["date"].dt.to_period("M").astype(str)
+        return df.groupby("mois", as_index=False)[["hosp"]].mean().round(0)
 
-    def taux_mortalite_distribution(self, region=None, dep=None):
+    def deces_par_mois(self, region=None, dep=None):
         """
-        Docstring pour taux_mortalite_distribution
+        Décès hospitaliers par mois.
 
         :param region: string
         :param dep: string
         """
         df = filter_by_geo(self.df, region, dep)
-        return df[["taux_mortalite"]].dropna()
+        df = df.copy()
+        df["mois"] = df["date"].dt.to_period("M").astype(str)
+        return df.groupby("mois", as_index=False)[["incid_dchosp"]].sum()

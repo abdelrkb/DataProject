@@ -38,22 +38,14 @@ class MapService(BaseService):
         labels = {
             "hosp": "Hosp. moyennes",
             "rea": "Réa moyennes",
-            "dchosp": "Décès hosp. moyens",
-            "taux_mortalite": "Taux de mortalité moyen (%)",
-            "taux_rea": "Taux de réa moyen (%)",
-            "incid_hosp": "Incid. hosp. moyenne",
-            "incid_rea": "Incid. réa moyenne",
-            "incid_dchosp": "Incid. décès hosp. moyenne",
+            "incid_hosp": "Entrées hosp. moyennes",
+            "incid_rea": "Entrées réa moyennes",
         }
         metrics_cols = [
             "hosp",
             "rea",
-            "dchosp",
-            "taux_mortalite",
-            "taux_rea",
             "incid_hosp",
             "incid_rea",
-            "incid_dchosp",
         ]
 
         if level == "dep":
@@ -110,7 +102,7 @@ class MapService(BaseService):
 
         return m._repr_html_()
 
-    def taux_mortalite_map_html(
+    def reanimations_map_html(
         self,
         level: str = "region",
         region: str | None = None,
@@ -125,22 +117,14 @@ class MapService(BaseService):
         labels = {
             "hosp": "Hosp. moyennes",
             "rea": "Réa moyennes",
-            "dchosp": "Décès hosp. moyens",
-            "taux_mortalite": "Taux de mortalité moyen (%)",
-            "taux_rea": "Taux de réa moyen (%)",
-            "incid_hosp": "Incid. hosp. moyenne",
-            "incid_rea": "Incid. réa moyenne",
-            "incid_dchosp": "Incid. décès hosp. moyenne",
+            "incid_hosp": "Entrées hosp. moyennes",
+            "incid_rea": "Entrées réa moyennes",
         }
         metrics_cols = [
             "hosp",
             "rea",
-            "dchosp",
-            "taux_mortalite",
-            "taux_rea",
             "incid_hosp",
             "incid_rea",
-            "incid_dchosp",
         ]
 
         if level == "dep":
@@ -154,7 +138,7 @@ class MapService(BaseService):
         agg_cols = [c for c in metrics_cols if c in df.columns]
         df = df.groupby(name_col, as_index=False)[agg_cols].mean()
         df[agg_cols] = df[agg_cols].round(2)
-        columns = [name_col, "taux_mortalite"]
+        columns = [name_col, "rea"]
 
         geojson = self._attach_properties(geojson, df, name_col, agg_cols)
         tooltip_fields = ["nom"] + agg_cols
@@ -177,7 +161,7 @@ class MapService(BaseService):
             fill_color="Blues",
             fill_opacity=0.8,
             line_opacity=0.2,
-            legend_name="Taux de mortalité",
+            legend_name="Réanimations",
         ).add_to(m)
         choropleth.geojson.add_child(
             folium.features.GeoJsonTooltip(

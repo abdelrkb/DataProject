@@ -15,14 +15,18 @@ class HistogramComponent(BaseComponent):
         # Dictionnaire des méthodes d'histogramme, utilisé pour générer les callbacks et layouts
         self.histogram_methods = {
             "hosp": {
-                "label": "Hospitalisation",
+                "label": "Hospitalisations moyennes par mois",
                 "column": "hosp",
-                "method": self.service.hosp_distribution,
+                "x_column": "mois",
+                "method": self.service.hosp_par_mois,
+                "chart_type": "bar",
             },
-            "taux_mortalite": {
-                "label": "Taux de mortalité (%)",
-                "column": "taux_mortalite",
-                "method": self.service.taux_mortalite_distribution,
+            "deces": {
+                "label": "Décès hospitaliers par mois",
+                "column": "incid_dchosp",
+                "x_column": "mois",
+                "method": self.service.deces_par_mois,
+                "chart_type": "bar",
             },
         }
 
@@ -126,20 +130,41 @@ class HistogramComponent(BaseComponent):
                     df = conf["method"]()
                     label = "France entière"
 
-                fig = px.histogram(
-                    df,
-                    x=conf["column"],
-                    nbins=30,
-                    title=f"{conf['label']} — {label}",
-                    labels={
-                        conf["column"]: conf["label"],
-                        "count": "Nombre de jours",
-                    },
-                    template="plotly_white",
-                )
-                fig.update_layout(
-                    title_x=0.5,
-                    yaxis_title="Nombre de jours",
-                )
+                chart_type = conf.get("chart_type", "histogram")
+
+                if chart_type == "bar":
+                    x_col = conf.get("x_column", "mois")
+                    fig = px.bar(
+                        df,
+                        x=x_col,
+                        y=conf["column"],
+                        title=f"{conf['label']} — {label}",
+                        labels={
+                            conf["column"]: conf["label"],
+                            x_col: "Mois",
+                        },
+                    )
+                    fig.update_layout(
+                        title_x=0.5,
+                        plot_bgcolor="white",
+                        paper_bgcolor="white",
+                    )
+                else:
+                    fig = px.histogram(
+                        df,
+                        x=conf["column"],
+                        nbins=30,
+                        title=f"{conf['label']} — {label}",
+                        labels={
+                            conf["column"]: conf["label"],
+                            "count": "Nombre de jours",
+                        },
+                    )
+                    fig.update_layout(
+                        title_x=0.5,
+                        yaxis_title="Nombre de jours",
+                        plot_bgcolor="white",
+                        paper_bgcolor="white",
+                    )
 
                 return fig
