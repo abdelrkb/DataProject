@@ -18,10 +18,10 @@ class GraphsComponent(BaseComponent):
                 "column": "hosp",
                 "method": self.service.hospitalisations,
             },
-            "taux_mortalite": {
-                "label": "Taux de mortalité COVID-19 (%)",
-                "column": "taux_mortalite",
-                "method": self.service.taux_mortalite,
+            "reanimations_mensuelles": {
+                "label": "Réanimations COVID-19 (mensuel)",
+                "column": "rea",
+                "method": self.service.reanimations_mensuelles,
             },
         }
 

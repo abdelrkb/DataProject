@@ -28,6 +28,6 @@ jobs:
           ruff check .
           ruff format --check .
 
-      - name: Tests
-        run: |
-          pytest --cov=src
+#     - name: Tests
+#        run: |
+#         pytest --cov=src

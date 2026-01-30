@@ -2,12 +2,26 @@ from src.services.base.base_service import BaseService
 from src.utils.data_filter import filter_by_geo, filter_by_date
 from src.services.base.datastore import DataStore
 import folium
+import json
 
 
 class MapService(BaseService):
     def __init__(self):
         super().__init__()
         self.geojson_dep, self.geojson_reg = DataStore.load_geojson()
+
+    def _attach_properties(self, geojson, df, name_col, columns):
+        # Deep copy to avoid mutating shared geojson across calls
+        geojson_copy = json.loads(json.dumps(geojson))
+        values = df.set_index(name_col)[columns].to_dict(orient="index")
+
+        for feature in geojson_copy.get("features", []):
+            name = feature.get("properties", {}).get("nom")
+            props = values.get(name, {})
+            for col in columns:
+                feature.setdefault("properties", {})[col] = props.get(col)
+
+        return geojson_copy
 
     def hospitalisations_map_html(
         self,
@@ -21,16 +35,35 @@ class MapService(BaseService):
         df = filter_by_geo(self.df, region=region, dep=dep)
         df = filter_by_date(df, start_date=start_date, end_date=end_date)
 
+        labels = {
+            "hosp": "Hosp. moyennes",
+            "rea": "Réa moyennes",
+            "incid_hosp": "Entrées hosp. moyennes",
+            "incid_rea": "Entrées réa moyennes",
+        }
+        metrics_cols = [
+            "hosp",
+            "rea",
+            "incid_hosp",
+            "incid_rea",
+        ]
+
         if level == "dep":
             geojson = self.geojson_dep
-            df = df.groupby("lib_dep", as_index=False)[["hosp"]].mean()
+            name_col = "lib_dep"
             key_on = "feature.properties.nom"
-            columns = ["lib_dep", "hosp"]
         else:
             geojson = self.geojson_reg
-            df = df.groupby("lib_reg", as_index=False)[["hosp"]].mean()
+            name_col = "lib_reg"
             key_on = "feature.properties.nom"
-            columns = ["lib_reg", "hosp"]
+        agg_cols = [c for c in metrics_cols if c in df.columns]
+        df = df.groupby(name_col, as_index=False)[agg_cols].mean()
+        df[agg_cols] = df[agg_cols].round(2)
+        columns = [name_col, "hosp"]
+
+        geojson = self._attach_properties(geojson, df, name_col, agg_cols)
+        tooltip_fields = ["nom"] + agg_cols
+        tooltip_aliases = ["Zone"] + [labels.get(c, c) for c in agg_cols]
 
         FRANCE_BOUNDS = [[41.0, -5.5], [51.5, 9.5]]
         # carte Folium
@@ -38,10 +71,10 @@ class MapService(BaseService):
             location=[46.6, 2.5],
             zoom_start=7,
             tiles="cartodbpositron",
-            crollWheelZoom=False,
+            scrollWheelZoom=False,
         )
         m.fit_bounds(FRANCE_BOUNDS)
-        folium.Choropleth(
+        choropleth = folium.Choropleth(
             geo_data=geojson,
             data=df,
             columns=columns,
@@ -51,10 +84,25 @@ class MapService(BaseService):
             line_opacity=0.2,
             legend_name="Hospitalisations",
         ).add_to(m)
+        choropleth.geojson.add_child(
+            folium.features.GeoJsonTooltip(
+                fields=tooltip_fields,
+                aliases=tooltip_aliases,
+                localize=True,
+                sticky=True,
+            )
+        )
+        choropleth.geojson.add_child(
+            folium.features.GeoJsonPopup(
+                fields=tooltip_fields,
+                aliases=tooltip_aliases,
+                localize=True,
+            )
+        )
 
         return m._repr_html_()
 
-    def taux_mortalite_map_html(
+    def reanimations_map_html(
         self,
         level: str = "region",
         region: str | None = None,
@@ -66,16 +114,35 @@ class MapService(BaseService):
         df = filter_by_geo(self.df, region=region, dep=dep)
         df = filter_by_date(df, start_date=start_date, end_date=end_date)
 
+        labels = {
+            "hosp": "Hosp. moyennes",
+            "rea": "Réa moyennes",
+            "incid_hosp": "Entrées hosp. moyennes",
+            "incid_rea": "Entrées réa moyennes",
+        }
+        metrics_cols = [
+            "hosp",
+            "rea",
+            "incid_hosp",
+            "incid_rea",
+        ]
+
         if level == "dep":
             geojson = self.geojson_dep
-            df = df.groupby("lib_dep", as_index=False)[["taux_mortalite"]].mean()
+            name_col = "lib_dep"
             key_on = "feature.properties.nom"
-            columns = ["lib_dep", "taux_mortalite"]
         else:
             geojson = self.geojson_reg
-            df = df.groupby("lib_reg", as_index=False)[["taux_mortalite"]].mean()
+            name_col = "lib_reg"
             key_on = "feature.properties.nom"
-            columns = ["lib_reg", "taux_mortalite"]
+        agg_cols = [c for c in metrics_cols if c in df.columns]
+        df = df.groupby(name_col, as_index=False)[agg_cols].mean()
+        df[agg_cols] = df[agg_cols].round(2)
+        columns = [name_col, "rea"]
+
+        geojson = self._attach_properties(geojson, df, name_col, agg_cols)
+        tooltip_fields = ["nom"] + agg_cols
+        tooltip_aliases = ["Zone"] + [labels.get(c, c) for c in agg_cols]
 
         FRANCE_BOUNDS = [[41.0, -5.5], [51.5, 9.5]]
         # carte Folium
@@ -86,7 +153,7 @@ class MapService(BaseService):
             scrollWheelZoom=False,
         )
         m.fit_bounds(FRANCE_BOUNDS)
-        folium.Choropleth(
+        choropleth = folium.Choropleth(
             geo_data=geojson,
             data=df,
             columns=columns,
@@ -94,7 +161,22 @@ class MapService(BaseService):
             fill_color="Blues",
             fill_opacity=0.8,
             line_opacity=0.2,
-            legend_name="Taux de mortalité",
+            legend_name="Réanimations",
         ).add_to(m)
+        choropleth.geojson.add_child(
+            folium.features.GeoJsonTooltip(
+                fields=tooltip_fields,
+                aliases=tooltip_aliases,
+                localize=True,
+                sticky=True,
+            )
+        )
+        choropleth.geojson.add_child(
+            folium.features.GeoJsonPopup(
+                fields=tooltip_fields,
+                aliases=tooltip_aliases,
+                localize=True,
+            )
+        )
 
         return m._repr_html_()

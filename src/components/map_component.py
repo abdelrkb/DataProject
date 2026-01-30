@@ -11,9 +11,9 @@ class MapComponent(BaseComponent):
                 "label": "Carte des hospitalisations moyennes par jour",
                 "method": self.service.hospitalisations_map_html,
             },
-            "taux_mortalite_map": {
-                "label": "Carte du taux de mortalité",
-                "method": self.service.taux_mortalite_map_html,
+            "reanimations_map": {
+                "label": "Carte des réanimations moyennes",
+                "method": self.service.reanimations_map_html,
             },
         }
 
