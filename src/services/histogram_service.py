@@ -20,7 +20,8 @@ class HistogramService(BaseService):
         df = filter_by_geo(self.df, region=region, dep=dep)
         df = df.copy()
         df["mois"] = df["date"].dt.to_period("M").astype(str)
-        return df.groupby("mois", as_index=False)[["hosp"]].mean().round(0)
+        return df.groupby(["mois", "date"], as_index=False)[["hosp"]].sum() \
+            .groupby("mois", as_index=False)[["hosp"]].mean().round(0)
 
     def deces_par_mois(self, region=None, dep=None):
         """

@@ -131,7 +131,7 @@ class GraphsComponent(BaseComponent):
                     y=conf["column"],
                     title=f"{conf['label']} — {label}",
                     labels={conf["column"]: conf["label"], "date": "Date"},
-                    template="plotly_white",
+                    template=None,
                 )
                 fig.update_layout(title_x=0.5)
 

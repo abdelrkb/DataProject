@@ -1,5 +1,6 @@
 from dash import html, dcc, Input, Output
 import plotly.express as px
+import plotly.graph_objects as go
 
 from src.components.base.base_component import BaseComponent
 from src.services.histogram_service import HistogramService
@@ -134,20 +135,26 @@ class HistogramComponent(BaseComponent):
 
                 if chart_type == "bar":
                     x_col = conf.get("x_column", "mois")
-                    fig = px.bar(
-                        df,
-                        x=x_col,
-                        y=conf["column"],
-                        title=f"{conf['label']} — {label}",
-                        labels={
-                            conf["column"]: conf["label"],
-                            x_col: "Mois",
-                        },
+                    fig = go.Figure(
+                        data=[
+                            go.Bar(
+                                x=df[x_col],
+                                y=df[conf["column"]],
+                                marker_color='#636EFA'
+                            )
+                        ]
                     )
                     fig.update_layout(
-                        title_x=0.5,
+                        title={
+                            'text': f"{conf['label']} — {label}",
+                            'x': 0.5,
+                            'xanchor': 'center'
+                        },
+                        xaxis_title="Mois",
+                        yaxis_title=conf["label"],
                         plot_bgcolor="white",
                         paper_bgcolor="white",
+                        showlegend=False
                     )
                 else:
                     fig = px.histogram(
@@ -159,6 +166,7 @@ class HistogramComponent(BaseComponent):
                             conf["column"]: conf["label"],
                             "count": "Nombre de jours",
                         },
+                        template=None
                     )
                     fig.update_layout(
                         title_x=0.5,
