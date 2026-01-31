@@ -12,6 +12,7 @@ class DataStore:
     def load_df(cls, force_reload=False):
         if cls.df is None or force_reload:
             cls.df = clean_data()
+            cls.df = cls.df[cls.df["date"] >= "2020-04-01"]
         return cls.df
 
     @classmethod

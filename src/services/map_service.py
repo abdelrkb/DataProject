@@ -23,7 +23,7 @@ class MapService(BaseService):
 
         return geojson_copy
 
-    def hospitalisations_map_html(
+    def deces_map_html(
         self,
         level: str = "region",
         region: str | None = None,
@@ -35,18 +35,8 @@ class MapService(BaseService):
         df = filter_by_geo(self.df, region=region, dep=dep)
         df = filter_by_date(df, start_date=start_date, end_date=end_date)
 
-        labels = {
-            "hosp": "Hosp. moyennes",
-            "rea": "Réa moyennes",
-            "incid_hosp": "Entrées hosp. moyennes",
-            "incid_rea": "Entrées réa moyennes",
-        }
-        metrics_cols = [
-            "hosp",
-            "rea",
-            "incid_hosp",
-            "incid_rea",
-        ]
+        metrics_cols = ["incid_dchosp", "incid_hosp"]
+
 
         if level == "dep":
             geojson = self.geojson_dep
@@ -57,9 +47,15 @@ class MapService(BaseService):
             name_col = "lib_reg"
             key_on = "feature.properties.nom"
         agg_cols = [c for c in metrics_cols if c in df.columns]
-        df = df.groupby(name_col, as_index=False)[agg_cols].mean()
-        df[agg_cols] = df[agg_cols].round(2)
-        columns = [name_col, "hosp"]
+        df = df.groupby(name_col, as_index=False)[agg_cols].sum()
+        df["letalite"] = (df["incid_dchosp"] / (df["incid_hosp"] + 1) * 100).round(1)
+        agg_cols.append("letalite")
+        columns = [name_col, "incid_dchosp"]
+        labels = {
+            "incid_dchosp": "Total décès",
+            "incid_hosp": "Total hosp.",
+            "letalite": "Létalité (%)",
+        }
 
         geojson = self._attach_properties(geojson, df, name_col, agg_cols)
         tooltip_fields = ["nom"] + agg_cols
@@ -82,7 +78,7 @@ class MapService(BaseService):
             fill_color="Reds",
             fill_opacity=0.8,
             line_opacity=0.2,
-            legend_name="Hospitalisations",
+            legend_name="Total décès",
         ).add_to(m)
         choropleth.geojson.add_child(
             folium.features.GeoJsonTooltip(
@@ -102,7 +98,7 @@ class MapService(BaseService):
 
         return m._repr_html_()
 
-    def reanimations_map_html(
+    def hospitalisations_map_html(
         self,
         level: str = "region",
         region: str | None = None,
@@ -115,16 +111,13 @@ class MapService(BaseService):
         df = filter_by_date(df, start_date=start_date, end_date=end_date)
 
         labels = {
-            "hosp": "Hosp. moyennes",
-            "rea": "Réa moyennes",
-            "incid_hosp": "Entrées hosp. moyennes",
-            "incid_rea": "Entrées réa moyennes",
+            "incid_hosp": "Total hosp.",
+            "incid_dchosp": "Total décès",
+            "letalite": "Létalité (%)",
         }
         metrics_cols = [
-            "hosp",
-            "rea",
             "incid_hosp",
-            "incid_rea",
+            "incid_dchosp",
         ]
 
         if level == "dep":
@@ -136,9 +129,11 @@ class MapService(BaseService):
             name_col = "lib_reg"
             key_on = "feature.properties.nom"
         agg_cols = [c for c in metrics_cols if c in df.columns]
-        df = df.groupby(name_col, as_index=False)[agg_cols].mean()
+        df = df.groupby(name_col, as_index=False)[agg_cols].sum()
         df[agg_cols] = df[agg_cols].round(2)
-        columns = [name_col, "rea"]
+        columns = [name_col, "incid_hosp"]
+        df["letalite"] = (df["incid_dchosp"] / (df["incid_hosp"] + 1) * 100).round(1)
+        agg_cols.append("letalite")
 
         geojson = self._attach_properties(geojson, df, name_col, agg_cols)
         tooltip_fields = ["nom"] + agg_cols
@@ -161,7 +156,7 @@ class MapService(BaseService):
             fill_color="Blues",
             fill_opacity=0.8,
             line_opacity=0.2,
-            legend_name="Réanimations",
+            legend_name="Total hospitalisations",
         ).add_to(m)
         choropleth.geojson.add_child(
             folium.features.GeoJsonTooltip(

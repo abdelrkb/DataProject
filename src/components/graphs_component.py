@@ -2,7 +2,7 @@ from dash import html, dcc, Input, Output
 import plotly.express as px
 from src.components.base.base_component import BaseComponent
 from src.services.graphs_service import GraphService
-
+import plotly.graph_objects as go
 
 class GraphsComponent(BaseComponent):
     """
@@ -125,14 +125,27 @@ class GraphsComponent(BaseComponent):
                     df = conf["method"]()
                     label = "France entière"
 
-                fig = px.line(
-                    df,
-                    x="date",
-                    y=conf["column"],
-                    title=f"{conf['label']} — {label}",
-                    labels={conf["column"]: conf["label"], "date": "Date"},
-                    template="plotly_white",
+                fig = go.Figure(
+                    data=[
+                        go.Scatter(
+                            x=df["date"],
+                            y=df[conf["column"]],
+                            mode='lines',
+                            line=dict(color='#636EFA', width=2)
+                        )
+                    ]
                 )
-                fig.update_layout(title_x=0.5)
+                fig.update_layout(
+                    title={
+                        'text': f"{conf['label']} — {label}",
+                        'x': 0.5,
+                        'xanchor': 'center'
+                    },
+                    xaxis_title="Date",
+                    yaxis_title=conf['label'],
+                    plot_bgcolor="white",
+                    paper_bgcolor="white",
+                    showlegend=False
+                )
 
                 return fig
