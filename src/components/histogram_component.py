@@ -16,10 +16,10 @@ class HistogramComponent(BaseComponent):
         # Dictionnaire des méthodes d'histogramme, utilisé pour générer les callbacks et layouts
         self.histogram_methods = {
             "hosp": {
-                "label": "Hospitalisations moyennes par mois",
+                "label": "Nouvelles hospitalisations par mois",
                 "column": "hosp",
                 "x_column": "mois",
-                "method": self.service.hosp_par_mois,
+                "method": self.service.nouvelles_hosp_par_mois,
                 "chart_type": "bar",
             },
             "deces": {

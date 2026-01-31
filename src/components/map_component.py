@@ -8,12 +8,12 @@ class MapComponent(BaseComponent):
         super().__init__(service=MapService())
         self.map_methods = {
             "hospitalisations_map": {
-                "label": "Carte des hospitalisations moyennes par jour",
-                "method": self.service.hospitalisations_map_html,
+                "label": "Carte des décès totaux",
+                "method": self.service.deces_map_html,
             },
             "reanimations_map": {
-                "label": "Carte des réanimations moyennes",
-                "method": self.service.reanimations_map_html,
+                "label": "Carte des hospitalisations totales",
+                "method": self.service.hospitalisations_map_html,
             },
         }
 
@@ -59,9 +59,9 @@ class MapComponent(BaseComponent):
                     id=self.cid(f"{key}-dates"),
                     display_format="YYYY-MM-DD",
                     style={"marginBottom": "10px"},
-                    min_date_allowed="2020-03-18",
+                    min_date_allowed="2020-04-01",
                     max_date_allowed="2023-06-30",
-                    start_date="2020-03-18",
+                    start_date="2020-04-01",
                     end_date="2023-06-30",
                 ),
                 html.Iframe(

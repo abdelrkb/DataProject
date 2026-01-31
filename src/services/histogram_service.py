@@ -10,7 +10,7 @@ class HistogramService(BaseService):
     def __init__(self):
         super().__init__()
 
-    def hosp_par_mois(self, region=None, dep=None):
+    def nouvelles_hosp_par_mois(self, region=None, dep=None):
         """
         Hospitalisations moyennes par mois.
 
@@ -20,8 +20,11 @@ class HistogramService(BaseService):
         df = filter_by_geo(self.df, region=region, dep=dep)
         df = df.copy()
         df["mois"] = df["date"].dt.to_period("M").astype(str)
-        return df.groupby(["mois", "date"], as_index=False)[["hosp"]].sum() \
-            .groupby("mois", as_index=False)[["hosp"]].mean().round(0)
+
+        result = df.groupby("mois", as_index=False)[["incid_hosp"]].sum()
+
+        result = result.rename(columns={"incid_hosp": "hosp"})
+        return result
 
     def deces_par_mois(self, region=None, dep=None):
         """
@@ -30,7 +33,8 @@ class HistogramService(BaseService):
         :param region: string
         :param dep: string
         """
-        df = filter_by_geo(self.df, region, dep)
+        df = filter_by_geo(self.df, region=region, dep=dep)
         df = df.copy()
         df["mois"] = df["date"].dt.to_period("M").astype(str)
+
         return df.groupby("mois", as_index=False)[["incid_dchosp"]].sum()
