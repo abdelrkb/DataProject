@@ -2,6 +2,10 @@ from abc import ABC, abstractmethod
 
 
 class BasePage(ABC):
+    """
+    BasePage dont les autres pages héritent
+    """
+
     @abstractmethod
     def layout(self):
         pass

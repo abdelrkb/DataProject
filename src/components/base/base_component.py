@@ -3,6 +3,10 @@ from src.services.reference_service import ReferenceService
 
 
 class BaseComponent(ABC):
+    """
+    Base component dont hérite les autres components
+    """
+
     def __init__(self, service=None):
         self.service = service
         self.reference_service = ReferenceService()
