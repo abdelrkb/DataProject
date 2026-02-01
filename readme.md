@@ -74,16 +74,70 @@ Contours géographiques : [france-geojson.gregoiredavid.fr](https://france-geojs
 
 ### Architecture
 ```
-src/
-├── components/      # Composants UI (sidebar, cartes)
-├── pages/          # Pages Dash
-├── services/       # Logique métier (graphs, histogrammes, cartes)
-└── utils/          # Utilitaires (filtres, nettoyage données)
+├── __init__.py
+├── assets
+│   └── global.css
+├── config.py
+├── contributing.md
+├── data
+│   ├── cleaned
+│   │   └── covid_clean.csv
+│   ├── geo
+│   │   ├── departements.geojson
+│   │   ├── guadeloupe.geojson
+│   │   ├── guyane.geojson
+│   │   ├── martinique.geojson
+│   │   ├── mayotte.geojson
+│   │   ├── regions.geojson
+│   │   └── reunion.geojson
+│   └── raw
+│       └── covid_dataset.csv
+├── images
+├── main.py
+├── pyproject.toml
+├── readme.md
+├── render.yaml
+├── requirements-dev.txt
+├── requirements.txt
+└── src
+    ├── __init__.py
+    ├── components # Composants UI (sidebar, cartes)
+    │   ├── __init__.py
+    │   ├── base
+    │   │   └── base_component.py
+    │   ├── dashboard_map_component.py
+    │   └── sidebar_component.py
+    ├── pages # Pages Dash
+    │   ├── __init__.py
+    │   ├── base
+    │   │   └── base_page.py
+    │   └── home_page.py
+    ├── services  # Logique métier (graphs, histogrammes, cartes)
+    │   ├── base
+    │   │   ├── base_service.py
+    │   │   └── datastore.py
+    │   ├── graphs_service.py
+    │   ├── histogram_service.py
+    │   ├── map_service.py
+    │   ├── reference_service.py
+    │   └── stats_service.py
+    └── utils  # Utilitaires (filtres, nettoyage données)
+        ├── __init__.py
+        ├── clean_data.py
+        ├── data_filter.py
+        └── get_data.py
 ```
 
+### Diagramme d'architecture Mermaid
+[Diagramme](images/diag1.png)
+
+### Diagramme des classes
+[Diagramme2](images/diag2.png)
+
 ### Ajouter une statistique
-1. Créer la méthode dans `src/services/graphs_service.py`
+1. Créer la méthode dans `src/services/graphs_service.py` ou ``src/services/histogramme_service.py`
 2. Ajouter à `stat_types` dans `src/components/sidebar_component.py`
+3. Créer la carte correspondante dans `map_service.py``
 
 ### Principes
 - Séparation des responsabilités (MVC-like)
