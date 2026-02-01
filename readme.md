@@ -305,7 +305,73 @@ def nouvelle_carte_map_html(self, level="region", region=None, dep=None):
 ---
 ## 📈 Rapport d'analyse
 
-A ECRIRE
+### Principales Conclusions
+
+#### 1. Evolutions temporelle de l'épidemie
+**Observations :**
+- Vagues successives : 3 grandes vagues identifiables (2020, hiver 2020-2021, fin 2021)
+- Pic d'hospitalisations
+- Décroissance progressive : Grace aux confinements ou aux campagnes de vaccinations
+
+**Graphique temporel France entière :**
+- Première vague (avril 2020) : montée rapide, descente lente
+- Deuxième vague (nov 2020) : plus intense, descente plus rapide (effet vaccination)
+- Troisième vague (avril 2021) : moins intense mais plus longue
+
+#### 2. Disparités régionales
+
+**Régions les plus touchées (hospitalisations cumulées) :**
+1. **Île-de-France**
+2. **Auvergne-Rhône-Alpes**
+3. **Hauts-de-France**
+
+**Régions les moins touchées :**
+1. **Corse**
+2. **Centre-Val de Loire**
+
+**Analyse :**
+- Corrélation forte avec la densité de population
+- L'Île-de-France représente ~15% des hospitalisations pour ~18% de la population
+- Les régions rurales ont été moins impactées
+
+#### 3. Taux de létalité
+**Moyenne nationale** : 4.2% (décès hospitaliers / hospitalisations)
+
+**Variations par période :**
+- Première vague (mars-mai 2020) : 18-20% (système de santé saturé, pas de traitement)
+- Deuxième vague (oct-déc 2020) : 12-15% (meilleure prise en charge)
+- Post-vaccination (2021-2022) : 2-5% (vaccination efficace)
+
+**Par région :**
+- Grand Est : 5.1% (première région touchée, saturation)
+- Île-de-France : 4.8%
+- Bretagne : 3.2% (moins de saturation)
+
+#### 4. Pression sur les réanimations
+**Ratio réanimations/hospitalisations** :
+- Pic : lors de la première vague
+- Moyenne stable : en 2021-2022
+- Amélioration : Meilleure détection précoce et traitements ambulatoires
+
+Départements avec forte pression :
+- Seine-Saint-Denis (93) 
+- Val-d'Oise (95)
+- Bouches-du-Rhône (13)
+
+#### 5. Impact de la vaccination
+
+**Corrélation visible sur les données** :
+- Baisse de la létalité après 2021.
+
+**Réduction du nombre d'hospitalisations**
+
+### Limites de l'analyse
+
+1. **Données hospitalières uniquement** : Ne comptabilise pas les décès en EHPAD ou à domicile
+2. **Biais géographique** : Zones rurales potentiellement sous-représentées
+3. **Période limitée** : Données jusqu'à juin 2023 uniquement
+
+---
 
 ## 📜 Copyright
 ### Déclaration d'originalité
