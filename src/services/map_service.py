@@ -46,7 +46,14 @@ class MapService(BaseService):
         }
 
     def _load_drom_geojson(self, drom_id):
-        """Charger le GeoJSON d'un DROM-COM spécifique"""
+        """
+        Charger le GeoJSON d'un DROM-COM spécifique
+
+        Args:
+            drom_id (str): Code département (971, 972, 973, 974, 976)
+        Returns:
+            dict | None: GeoJSON du DROM-COM ou None si non trouvé
+        """
         geojson_paths = {
             "971": CONFIG["GEOJSON_PATH"].get("GUADELOUPE"),
             "972": CONFIG["GEOJSON_PATH"].get("MARTINIQUE"),
@@ -62,7 +69,17 @@ class MapService(BaseService):
         return None
 
     def _attach_properties(self, geojson, df, name_col, columns):
-        """Attache les données aux features GeoJSON"""
+        """
+        Attache les données aux features GeoJSON
+
+        Args:
+            geojson (dict): GeoJSON des zones géographiques
+            df (pandas.DataFrame): DataFrame avec les données agrégées
+            name_col (str): Nom de la colonne dans df correspondant au nom dans GeoJSON
+            columns (list[str]): Liste des colonnes à attacher comme propriétés
+        Returns:
+            dict: GeoJSON avec les propriétés attachées
+        """
         geojson_copy = json.loads(json.dumps(geojson))
         values = df.set_index(name_col)[columns].to_dict(orient="index")
 
@@ -77,7 +94,19 @@ class MapService(BaseService):
     def _create_base_map(
         self, center, zoom, bounds=None, scroll_zoom=False, dragging=False
     ):
-        """Créer une carte Folium de base avec des paramètres standards"""
+        """
+        Créer une carte Folium de base avec des paramètres standards
+
+        Args:
+            center (list[float]): Coordonnées [lat, lon] du centre de la carte
+            zoom (int): Niveau de zoom initial
+            bounds (list[list[float]] | None): Limites de la carte [[lat_min
+            , lon_min], [lat_max, lon_max]]
+            scroll_zoom (bool): Activer/désactiver le zoom par défilement
+            dragging (bool): Activer/désactiver le glissement de la carte
+        Returns:
+            folium.Map: Instance de la carte Folium
+        """
         m = folium.Map(
             location=center,
             zoom_start=zoom,
@@ -101,7 +130,18 @@ class MapService(BaseService):
         start_date: str | None = None,
         end_date: str | None = None,
     ) -> str:
-        """Carte des hospitalisations pour France métropolitaine"""
+        """
+        Carte des hospitalisations pour France métropolitaine
+
+        Args:
+            level (str): "region" ou "dep" pour le niveau géographique
+            region (str | None): Filtrer par région spécifique
+            dep (str | None): Filtrer par département spécifique
+            start_date (str | None): Date de début pour le filtrage
+            end_date (str | None): Date de fin pour le filtrage
+        Returns:
+            str: HTML de la carte Folium
+        """
         df = filter_by_geo(self.df, region=region, dep=dep)
         df = filter_by_date(df, start_date=start_date, end_date=end_date)
 
@@ -167,7 +207,18 @@ class MapService(BaseService):
         start_date: str | None = None,
         end_date: str | None = None,
     ) -> str:
-        """Carte des décès pour France métropolitaine"""
+        """
+        Carte des décès pour France métropolitaine
+
+        Args:
+            level (str): "region" ou "dep" pour le niveau géographique
+            region (str | None): Filtrer par région spécifique
+            dep (str | None): Filtrer par département spécifique
+            start_date (str | None): Date de début pour le filtrage
+            end_date (str | None): Date de fin pour le filtrage
+        Returns:
+            str: HTML de la carte Folium
+        """
         df = filter_by_geo(self.df, region=region, dep=dep)
         df = filter_by_date(df, start_date=start_date, end_date=end_date)
 
@@ -233,7 +284,19 @@ class MapService(BaseService):
         start_date: str | None = None,
         end_date: str | None = None,
     ) -> str:
-        """Carte des réanimations pour France métropolitaine"""
+        """
+        Carte des réanimations pour France métropolitaine
+
+
+        Args:
+            level (str): "region" ou "dep" pour le niveau géographique
+            region (str | None): Filtrer par région spécifique
+            dep (str | None): Filtrer par département spécifique
+            start_date (str | None): Date de début pour le filtrage
+            end_date (str | None): Date de fin pour le filtrage
+        Returns:
+            str: HTML de la carte Folium
+        """
         df = filter_by_geo(self.df, region=region, dep=dep)
         df = filter_by_date(df, start_date=start_date, end_date=end_date)
 
@@ -296,7 +359,17 @@ class MapService(BaseService):
         start_date: str | None = None,
         end_date: str | None = None,
     ) -> str:
-        """Carte des retours à domicile (sorties hospitalières)"""
+        """Carte des retours à domicile (sorties hospitalières)
+
+        Args:
+            level (str): "region" ou "dep" pour le niveau géographique
+            region (str | None): Filtrer par région spécifique
+            dep (str | None): Filtrer par département spécifique
+            start_date (str | None): Date de début pour le filtrage
+            end_date (str | None): Date de fin pour le filtrage
+        Returns:
+            str: HTML de la carte Folium
+        """
 
         df = filter_by_geo(self.df, region=region, dep=dep)
         df = filter_by_date(df, start_date=start_date, end_date=end_date)

@@ -6,7 +6,9 @@ from src.services.histogram_service import HistogramService
 
 
 class SidebarComponent(BaseComponent):
-    """ """
+    """
+    Component pour la barre de gauche
+    """
 
     def __init__(self):
         super().__init__()
