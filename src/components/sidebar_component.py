@@ -17,15 +17,15 @@ class SidebarComponent(BaseComponent):
 
         self.stat_types = {
             "hosp": {
-                "label": "Taux d'occupation des lits en moyenne (Nombre d'entrées par jour)",
+                "label": "Nouvelles hospitalisations",
                 "graph_method": self.graph_service.hospitalisations,
                 "hist_method": self.histogram_service.nouvelles_hosp_par_mois,
                 "graph_col": "hosp",
                 "hist_col": "hosp",
-                "unit": "lits",
+                "unit": "hospitalisations",
             },
             "rea": {
-                "label": "Taux de réanimation en moyenne (Nombre d'entrées par jour)",
+                "label": "Nouvelles entrées en réanimation",
                 "graph_method": self.graph_service.reanimations_mensuelles,
                 "hist_method": self.histogram_service.reanimations_par_mois,
                 "graph_col": "rea",
@@ -33,7 +33,7 @@ class SidebarComponent(BaseComponent):
                 "unit": "patients",
             },
             "deces": {
-                "label": "Décès hospitaliers en moyenne (Nombre de décès par jour)",
+                "label": "Décès hospitaliers",
                 "graph_method": self.graph_service.deces_temporel,
                 "hist_method": self.histogram_service.deces_par_mois,
                 "graph_col": "dchosp",
@@ -41,12 +41,12 @@ class SidebarComponent(BaseComponent):
                 "unit": "décès",
             },
             "rad": {
-                "label": "Retours à domicile (Moyenne nombre de retours par jour)",
+                "label": "Retours à domicile",
                 "graph_method": self.graph_service.retours_domicile_mensuels,
                 "hist_method": self.histogram_service.retours_domicile_par_mois,
                 "graph_col": "rad",
                 "hist_col": "retours",
-                "unit": "patients",
+                "unit": "retours",
             },
         }
 
@@ -69,7 +69,7 @@ class SidebarComponent(BaseComponent):
                         ),
                         html.Div(
                             id=self.cid("main-label"),
-                            children="Taux d'occupation des lits en réanimation",
+                            children="Données COVID-19 des hôpitaux français",
                             className="sidebar-label",
                         ),
                     ],
@@ -154,6 +154,7 @@ class SidebarComponent(BaseComponent):
                                     style={"width": "100%"},
                                 ),
                             ],
+                            className="filter-group",
                         ),
                     ],
                     className="sidebar-filters",
@@ -161,7 +162,7 @@ class SidebarComponent(BaseComponent):
                 html.Div(
                     [
                         html.Div(
-                            "Taux d'occupation",
+                            "Évolution mensuelle",
                             className="graph-title",
                             id=self.cid("graph-title"),
                         ),
@@ -176,7 +177,7 @@ class SidebarComponent(BaseComponent):
                 html.Div(
                     [
                         html.Div(
-                            "Taux d'incidence",
+                            "Total par mois",
                             className="graph-title",
                             id=self.cid("hist-title"),
                         ),
@@ -288,15 +289,15 @@ class SidebarComponent(BaseComponent):
                 df = config["hist_method"](
                     region=region, start_date=start_date, end_date=end_date
                 )
-                title = "Taux d'incidence hospitalisation"
+                title = "Total par mois"
             elif level == "dep" and dep:
                 df = config["hist_method"](
                     dep=dep, start_date=start_date, end_date=end_date
                 )
-                title = "Taux d'incidence"
+                title = "Total par mois"
             else:
                 df = config["hist_method"](start_date=start_date, end_date=end_date)
-                title = "Taux d'incidence"
+                title = "Total par mois"
 
             fig = go.Figure(
                 data=[

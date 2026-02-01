@@ -58,20 +58,17 @@ class HistogramService(BaseService):
 
         df["mois"] = df["date"].dt.to_period("M").astype(str)
 
-        if "incid_rea" in df.columns:
-            return (
-                df.groupby("mois", as_index=False)[["incid_rea"]]
-                .sum()
-                .rename(columns={"incid_rea": "rea"})
-            )
-
-        return df.groupby("mois", as_index=False)[["rea"]].mean()
+        return (
+            df.groupby("mois", as_index=False)[["incid_rea"]]
+            .sum()
+            .rename(columns={"incid_rea": "rea"})
+        )
 
     def retours_domicile_par_mois(
         self, region=None, dep=None, start_date=None, end_date=None
     ):
         """
-        hospitalisations
+        Retours à domicile par mois.
 
         Args :
             region (str | None): region
@@ -88,7 +85,7 @@ class HistogramService(BaseService):
         df["mois"] = df["date"].dt.to_period("M").astype(str)
 
         return (
-            df.groupby("mois", as_index=False)[["rad"]]
+            df.groupby("mois", as_index=False)[["incid_rad"]]
             .sum()
-            .rename(columns={"rad": "retours"})
+            .rename(columns={"incid_rad": "retours"})
         )
