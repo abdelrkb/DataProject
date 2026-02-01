@@ -121,16 +121,7 @@ class DashboardMapComponent(BaseComponent):
                     start_date=start_date,
                     end_date=end_date,
                 )
-                title = "Réanimations"
-            elif stat_type == "rad":
-                map_html = self.service.retours_domicile_map_html(
-                    level=map_level,
-                    region=region,
-                    dep=dep,
-                    start_date=start_date,
-                    end_date=end_date,
-                )
-                title = "Retours à domicile totaux"
+                title = "Nombre total de personnes admises en réanimation"
             else:
                 map_html = self.service.hospitalisations_map_html(
                     level=map_level,

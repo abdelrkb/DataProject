@@ -300,10 +300,10 @@ class MapService(BaseService):
         df = filter_by_geo(self.df, region=region, dep=dep)
         df = filter_by_date(df, start_date=start_date, end_date=end_date)
 
-        metrics_cols = ["rea", "incid_rea"] if "incid_rea" in df.columns else ["rea"]
+        metrics_cols = ["incid_rea"] if "incid_rea" in df.columns else ["rea"]
         labels = {
-            "rea": "Total réa",
-            "incid_rea": "Nouvelles réa",
+            "rea": "Patients en réa",
+            "incid_rea": "Total entrées en réa",
         }
 
         if level == "dep":
@@ -317,6 +317,10 @@ class MapService(BaseService):
 
         agg_cols = [c for c in metrics_cols if c in df.columns]
         df = df.groupby(name_col, as_index=False)[agg_cols].sum()
+        
+        if "incid_rea" in df.columns:
+            df = df.rename(columns={"incid_rea": "rea"})
+            agg_cols = ["rea"]
 
         columns = [name_col, "rea"]
 

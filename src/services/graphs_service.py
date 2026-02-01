@@ -18,7 +18,7 @@ class GraphService(BaseService):
         end_date=None,
     ):
         """
-         hospitalisations
+         Nouvelles hospitalisations par mois
 
         Args :
             region (str | None): region
@@ -34,8 +34,8 @@ class GraphService(BaseService):
         df = df.copy()
         df["month"] = df["date"].dt.to_period("M").dt.to_timestamp()
 
-        grouped = df.groupby("month", as_index=False)[["hosp"]].mean()
-        grouped = grouped.rename(columns={"month": "date"})
+        grouped = df.groupby("month", as_index=False)[["incid_hosp"]].sum()
+        grouped = grouped.rename(columns={"month": "date", "incid_hosp": "hosp"})
 
         return grouped[["date", "hosp"]].dropna()
 
@@ -76,7 +76,7 @@ class GraphService(BaseService):
         end_date=None,
     ):
         """
-        reanimatioons
+        Nouvelles entrées en réanimation par mois
 
         Args :
             region (str | None): region
@@ -92,8 +92,8 @@ class GraphService(BaseService):
         df = df.copy()
         df["month"] = df["date"].dt.to_period("M").dt.to_timestamp()
 
-        grouped = df.groupby("month", as_index=False)[["rea"]].mean()
-        grouped = grouped.rename(columns={"month": "date"})
+        grouped = df.groupby("month", as_index=False)[["incid_rea"]].sum()
+        grouped = grouped.rename(columns={"month": "date", "incid_rea": "rea"})
 
         return grouped[["date", "rea"]].dropna()
 
@@ -101,7 +101,7 @@ class GraphService(BaseService):
         self, region=None, dep=None, start_date=None, end_date=None
     ):
         """
-        retours a domicile
+        Nouveaux retours a domicile par mois
 
         Args :
             region (str | None): region
@@ -117,7 +117,7 @@ class GraphService(BaseService):
         df = df.copy()
         df["month"] = df["date"].dt.to_period("M").dt.to_timestamp()
 
-        grouped = df.groupby("month", as_index=False)[["rad"]].mean()
-        grouped = grouped.rename(columns={"month": "date"})
+        grouped = df.groupby("month", as_index=False)[["incid_rad"]].sum()
+        grouped = grouped.rename(columns={"month": "date", "incid_rad": "rad"})
 
         return grouped[["date", "rad"]].dropna()
