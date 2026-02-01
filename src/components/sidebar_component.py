@@ -46,6 +46,16 @@ class SidebarComponent(BaseComponent):
                 "hist_y_col": "count",
                 "unit": "décès",
             },
+            "rad": {
+                "label": "Nouveaux retours à domicile",
+                "hist_label": "Fréquence des retours à domicile quotidiens",
+                "graph_method": self.graph_service.retours_domicile_mensuels,
+                "hist_method": self.histogram_service.retours_domicile_par_mois,
+                "graph_col": "rad",
+                "hist_x_col": "retours",
+                "hist_y_col": "count",
+                "unit": "retours à domicile",
+            },
         }
 
     def layout(self):
@@ -167,7 +177,12 @@ class SidebarComponent(BaseComponent):
                         html.Div(
                             "Total des nouveaux cas par mois",
                             id=self.cid("graph-description"),
-                            style={"fontSize": "10px", "color": "#888", "textAlign": "center", "marginBottom": "5px"},
+                            style={
+                                "fontSize": "10px",
+                                "color": "#888",
+                                "textAlign": "center",
+                                "marginBottom": "5px",
+                            },
                         ),
                         dcc.Graph(
                             id=self.cid("time-graph"),
@@ -187,7 +202,12 @@ class SidebarComponent(BaseComponent):
                         html.Div(
                             "Nombre de jours par intervalle de cas quotidiens",
                             id=self.cid("hist-description"),
-                            style={"fontSize": "10px", "color": "#888", "textAlign": "center", "marginBottom": "5px"},
+                            style={
+                                "fontSize": "10px",
+                                "color": "#888",
+                                "textAlign": "center",
+                                "marginBottom": "5px",
+                            },
                         ),
                         dcc.Graph(
                             id=self.cid("histogram"),

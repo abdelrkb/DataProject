@@ -9611,6 +9611,11 @@
     },
     "properties": {
         "code": "971",
-        "nom": "Guadeloupe"
+        "nom": "Guadeloupe",
+        "incid_hosp": 0,
+        "incid_dchosp": 0,
+        "incid_rea": 0,
+        "rea": 0,
+        "letalite": 0
     }
 }

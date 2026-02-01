@@ -7403,6 +7403,11 @@
     },
     "properties": {
         "code": "973",
-        "nom": "Guyane"
+        "nom": "Guyane",
+        "incid_hosp": 0,
+        "incid_dchosp": 0,
+        "incid_rea": 0,
+        "rea": 0,
+        "letalite": 0
     }
 }
