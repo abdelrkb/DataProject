@@ -224,13 +224,17 @@ class SidebarComponent(BaseComponent):
             config = self.stat_types[stat_type]
 
             if level == "region" and region:
-                df = config["graph_method"](region=region)
+                df = config["graph_method"](
+                    region=region, start_date=start_date, end_date=end_date
+                )
                 title = f"{config['label']}"
             elif level == "dep" and dep:
-                df = config["graph_method"](dep=dep)
+                df = config["graph_method"](
+                    dep=dep, start_date=start_date, end_date=end_date
+                )
                 title = f"{config['label']}"
             else:
-                df = config["graph_method"]()
+                df = config["graph_method"](start_date=start_date, end_date=end_date)
                 title = f"{config['label']}"
 
             fig = go.Figure(
@@ -281,13 +285,17 @@ class SidebarComponent(BaseComponent):
             config = self.stat_types[stat_type]
 
             if level == "region" and region:
-                df = config["hist_method"](region=region)
+                df = config["hist_method"](
+                    region=region, start_date=start_date, end_date=end_date
+                )
                 title = "Taux d'incidence hospitalisation"
             elif level == "dep" and dep:
-                df = config["hist_method"](dep=dep)
+                df = config["hist_method"](
+                    dep=dep, start_date=start_date, end_date=end_date
+                )
                 title = "Taux d'incidence"
             else:
-                df = config["hist_method"]()
+                df = config["hist_method"](start_date=start_date, end_date=end_date)
                 title = "Taux d'incidence"
 
             fig = go.Figure(
