@@ -1,32 +1,34 @@
 from dash import html
-from src.components.header import header_component
-from src.components.stats_component import StatsComponent
-from src.components.graphs_component import GraphsComponent
 from src.pages.base.base_page import BasePage
-from src.components.histogram_component import HistogramComponent
-from src.components.map_component import MapComponent
+from src.components.sidebar_component import SidebarComponent
+from src.components.dashboard_map_component import DashboardMapComponent
 
 
 class HomePage(BasePage):
+    """
+    Page principale du dashboard COVID-19
+    Layout en deux colonnes : sidebar (gauche) + carte (droite)
+    """
+
     def __init__(self):
-        self.stats_component = StatsComponent()
-        self.graphs_component = GraphsComponent()
-        self.histogram_component = HistogramComponent()
-        self.map_component = MapComponent()
+        self.sidebar = SidebarComponent()
+        self.map_component = DashboardMapComponent()
 
     def layout(self):
+        """
+        Layout principal avec structure sidebar + carte
+        """
         return html.Div(
             [
-                header_component,
-                self.stats_component.layout(),
-                self.graphs_component.layout(),
-                self.histogram_component.layout(),
+                self.sidebar.layout(),
                 self.map_component.layout(),
             ],
-            className="container",
+            className="dashboard-layout",
         )
 
     def register_callbacks(self, app):
-        self.graphs_component.register_callbacks(app)
-        self.histogram_component.register_callbacks(app)
+        """
+        Enregistrer tous les callbacks des composants
+        """
+        self.sidebar.register_callbacks(app)
         self.map_component.register_callbacks(app)

@@ -21,7 +21,6 @@ class GraphService(BaseService):
             grouped = grouped.rename(columns={"month": "date", "incid_rea": "rea"})
             return grouped[["date", "rea"]].dropna()
 
-        # Fallback: rea est un stock -> approx mensuelle via moyenne journalière
         grouped = df.groupby("month", as_index=False)[["rea"]].mean()
         grouped = grouped.rename(columns={"month": "date"})
         return grouped[["date", "rea"]].dropna()

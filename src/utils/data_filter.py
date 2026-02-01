@@ -50,8 +50,6 @@ def available_dep(df):
 
 
 def filter_by_date(df, start_date=None, end_date=None):
-    print(start_date)
-    print(end_date)
     if start_date:
         df = df[df["date"] >= start_date]
 
