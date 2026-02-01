@@ -164,6 +164,11 @@ class SidebarComponent(BaseComponent):
                             className="graph-title",
                             id=self.cid("graph-title"),
                         ),
+                        html.Div(
+                            "Total des nouveaux cas par mois",
+                            id=self.cid("graph-description"),
+                            style={"fontSize": "10px", "color": "#888", "textAlign": "center", "marginBottom": "5px"},
+                        ),
                         dcc.Graph(
                             id=self.cid("time-graph"),
                             config={"displayModeBar": False},
@@ -178,6 +183,11 @@ class SidebarComponent(BaseComponent):
                             "Histogramme",
                             className="graph-title",
                             id=self.cid("hist-title"),
+                        ),
+                        html.Div(
+                            "Nombre de jours par intervalle de cas quotidiens",
+                            id=self.cid("hist-description"),
+                            style={"fontSize": "10px", "color": "#888", "textAlign": "center", "marginBottom": "5px"},
                         ),
                         dcc.Graph(
                             id=self.cid("histogram"),
