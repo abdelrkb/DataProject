@@ -288,6 +288,77 @@ class MapService(BaseService):
 
         return m._repr_html_()
 
+    def retours_domicile_map_html(
+        self,
+        level: str = "region",
+        region: str | None = None,
+        dep: str | None = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
+    ) -> str:
+        """Carte des retours à domicile (sorties hospitalières)"""
+
+        df = filter_by_geo(self.df, region=region, dep=dep)
+        df = filter_by_date(df, start_date=start_date, end_date=end_date)
+
+        metric_col = "rad"
+        labels = {"rad": "Retours à domicile"}
+
+        if level == "dep":
+            geojson = self.geojson_dep
+            name_col = "lib_dep"
+            key_on = "feature.properties.nom"
+        else:
+            geojson = self.geojson_reg
+            name_col = "lib_reg"
+            key_on = "feature.properties.nom"
+
+        df = (
+            df.groupby(name_col, as_index=False)[[metric_col]]
+            .sum()
+            .rename(columns={metric_col: "retours"})
+        )
+
+        geojson = self._attach_properties(
+            geojson,
+            df,
+            name_col,
+            ["retours"],
+        )
+
+        tooltip_fields = ["nom", "retours"]
+        tooltip_aliases = ["Zone", labels["rad"]]
+
+        FRANCE_BOUNDS = [[41.0, -5.5], [51.5, 9.5]]
+        m = self._create_base_map(
+            center=[46.6, 2.5],
+            zoom=6,
+            bounds=FRANCE_BOUNDS,
+            scroll_zoom=False,
+        )
+
+        choropleth = folium.Choropleth(
+            geo_data=geojson,
+            data=df,
+            columns=[name_col, "retours"],
+            key_on=key_on,
+            fill_color="Greens",
+            fill_opacity=0.7,
+            line_opacity=0.3,
+            legend_name="Retours à domicile",
+        ).add_to(m)
+
+        choropleth.geojson.add_child(
+            folium.features.GeoJsonTooltip(
+                fields=tooltip_fields,
+                aliases=tooltip_aliases,
+                localize=True,
+                sticky=True,
+            )
+        )
+
+        return m._repr_html_()
+
     def drom_map_html(
         self, drom_id: str, metric: str = "hosp", use_choropleth: bool = True
     ) -> str:

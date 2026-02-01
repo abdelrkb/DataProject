@@ -15,7 +15,7 @@ class SidebarComponent(BaseComponent):
 
         self.stat_types = {
             "hosp": {
-                "label": "Taux d'occupation des lits",
+                "label": "Taux d'occupation des lits en moyenne (Nombre d'entrées par jour)",
                 "graph_method": self.graph_service.hospitalisations,
                 "hist_method": self.histogram_service.nouvelles_hosp_par_mois,
                 "graph_col": "hosp",
@@ -23,20 +23,28 @@ class SidebarComponent(BaseComponent):
                 "unit": "lits",
             },
             "rea": {
-                "label": "Taux de réanimation",
+                "label": "Taux de réanimation en moyenne (Nombre d'entrées par jour)",
                 "graph_method": self.graph_service.reanimations_mensuelles,
-                "hist_method": self.histogram_service.nouvelles_hosp_par_mois,
+                "hist_method": self.histogram_service.reanimations_par_mois,
                 "graph_col": "rea",
-                "hist_col": "hosp",
+                "hist_col": "rea",
                 "unit": "patients",
             },
             "deces": {
-                "label": "Décès hospitaliers",
-                "graph_method": self.graph_service.hospitalisations,
+                "label": "Décès hospitaliers en moyenne (Nombre de décès par jour)",
+                "graph_method": self.graph_service.deces_temporel,
                 "hist_method": self.histogram_service.deces_par_mois,
-                "graph_col": "hosp",
+                "graph_col": "dchosp",
                 "hist_col": "incid_dchosp",
                 "unit": "décès",
+            },
+            "rad": {
+                "label": "Retours à domicile (Moyenne nombre de retours par jour)",
+                "graph_method": self.graph_service.retours_domicile_mensuels,
+                "hist_method": self.histogram_service.retours_domicile_par_mois,
+                "graph_col": "rad",
+                "hist_col": "retours",
+                "unit": "patients",
             },
         }
 
@@ -131,6 +139,20 @@ class SidebarComponent(BaseComponent):
                             ],
                             className="filter-group",
                         ),
+                        html.Div(
+                            [
+                                html.Label("Période", className="filter-label"),
+                                dcc.DatePickerRange(
+                                    id=self.cid("date-range"),
+                                    start_date="2020-04-01",
+                                    end_date="2023-06-30",
+                                    min_date_allowed="2020-04-01",
+                                    max_date_allowed="2023-06-30",
+                                    display_format="DD/MM/YYYY",
+                                    style={"width": "100%"},
+                                ),
+                            ],
+                        ),
                     ],
                     className="sidebar-filters",
                 ),
@@ -193,8 +215,10 @@ class SidebarComponent(BaseComponent):
             Input(self.cid("region"), "value"),
             Input(self.cid("dep"), "value"),
             Input(self.cid("stat-type"), "value"),
+            Input(self.cid("date-range"), "start_date"),
+            Input(self.cid("date-range"), "end_date"),
         )
-        def update_time_graph(level, region, dep, stat_type):
+        def update_time_graph(level, region, dep, stat_type, start_date, end_date):
             config = self.stat_types[stat_type]
 
             if level == "region" and region:
@@ -248,13 +272,15 @@ class SidebarComponent(BaseComponent):
             Input(self.cid("region"), "value"),
             Input(self.cid("dep"), "value"),
             Input(self.cid("stat-type"), "value"),
+            Input(self.cid("date-range"), "start_date"),
+            Input(self.cid("date-range"), "end_date"),
         )
-        def update_histogram(level, region, dep, stat_type):
+        def update_histogram(level, region, dep, stat_type, start_date, end_date):
             config = self.stat_types[stat_type]
 
             if level == "region" and region:
                 df = config["hist_method"](region=region)
-                title = "Taux d'incidence"
+                title = "Taux d'incidence hospitalisation"
             elif level == "dep" and dep:
                 df = config["hist_method"](dep=dep)
                 title = "Taux d'incidence"

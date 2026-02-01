@@ -29,7 +29,7 @@ class DashboardMapComponent(BaseComponent):
                     [
                         html.Div(
                             id=self.cid("map-title"),
-                            children="Taux d'occupation des lits en réanimation",
+                            children="Taux d'occupation des lits en réanimation moyenne",
                             className="map-title",
                         ),
                         html.Div(
@@ -111,7 +111,12 @@ class DashboardMapComponent(BaseComponent):
                 map_html = self.service.reanimations_map_html(
                     level=map_level, region=region, dep=dep
                 )
-                title = "Décès hospitaliers totaux"
+                title = "Réanimations"
+            elif stat_type == "rad":
+                map_html = self.service.retours_domicile_map_html(
+                    level=map_level, region=region, dep=dep
+                )
+                title = "Retours à domicile totaux"
             else:
                 map_html = self.service.hospitalisations_map_html(
                     level=map_level, region=region, dep=dep
