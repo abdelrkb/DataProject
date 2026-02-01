@@ -14,11 +14,6 @@ Visualisation interactive des données COVID-19 en France avec cartes choroplèt
 ---
 
 # User Guide 
- .\venv\Scripts\Activate.ps1
-
- Pour participer insytaller pre commit : 
- pre-commit install
- ref cartes:https://france-geojson.gregoiredavid.fr
 
  ### Prérequis
 
@@ -58,7 +53,8 @@ L'application sera accessible sur **http://127.0.0.1:8050**.
 
 #### Interface principale
 
-L'interface est divisée en deux zones :
+L'interface est divisée en deux zones : 
+
 **1. Sidebar gauche**
 - Header : Statistiques principales
 - Filtres : 
@@ -66,6 +62,9 @@ L'interface est divisée en deux zones :
     - Type de statistiques : Hospitalisations, réanimations, décès...
 - Graphique Temporel : évolution temporel selon la statistique
 - Histogramme : distribution par mois
+
+**2. Sidebar gauche**
+- Carte clorophète par rapport aux filtes de la sidebar
 
 #### Interactions
 1. Changer de niveau géographique :
@@ -301,6 +300,59 @@ def nouvelle_carte_map_html(self, level="region", region=None, dep=None):
    - Chaque component enregistre ses propres callbacks
    - Utilisation de `cid()` pour des IDs uniques
    - Pas de callbacks globaux dans main.py
+
+
+### Qualité de code
+
+Le projet utilise **Ruff** pour garantir la qualité et la cohérence du code.
+
+#### Installation des outils de développement
+```bash
+pip install -r requirements-dev.txt
+```
+
+#### Ruff - Linter et formateur
+
+**Ruff** est un linter Python ultra-rapide qui remplace flake8, isort et black.
+
+**Vérifier le code :**
+```bash
+ruff check .
+```
+
+**Corriger automatiquement :**
+```bash
+ruff check . --fix
+```
+
+**Formater le code :**
+```bash
+ruff format .
+```
+
+#### Pre-commit hooks
+
+Le projet utilise **pre-commit** pour vérifier automatiquement le code avant chaque commit.
+
+**Installer les hooks :**
+```bash
+pre-commit install
+```
+
+Les hooks s'exécuteront automatiquement à chaque `git commit` et bloqueront le commit si le code ne respecte pas les standards.
+
+#### Configuration
+
+La configuration de Ruff se trouve dans `pyproject.toml` :
+- **Target** : Python 3.13
+- **Line length** : 88 caractères (standard Black)
+- **Rules** : Erreurs de syntaxe (E4, E7, E9) et erreurs Python (F)
+
+#### CI/CD
+
+Une GitHub Action (`/.github/workflows/ci.yml`) vérifie automatiquement le code sur chaque Pull Request vers `main`.
+
+Voir le Contributing.MD pour plus d'informations sur la qualité de code.
 
 ---
 ## 📈 Rapport d'analyse
