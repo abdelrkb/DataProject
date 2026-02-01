@@ -129,10 +129,11 @@ Contours géographiques : [france-geojson.gregoiredavid.fr](https://france-geojs
 ```
 
 ### Diagramme d'architecture Mermaid
-[Diagramme](images/diag1.png)
+<img width="754" height="724" alt="image" src="https://github.com/user-attachments/assets/10605e74-aeaf-4290-b4f4-a46ee757f612" />
+
 
 ### Diagramme des classes
-[Diagramme2](images/diag2.png)
+<img width="1100" height="625" alt="image" src="https://github.com/user-attachments/assets/63c7a3ec-19c7-469d-a3b7-2e0711dae295" />
 
 ### Ajouter une statistique
 1. Créer la méthode dans `src/services/graphs_service.py` ou ``src/services/histogramme_service.py`
