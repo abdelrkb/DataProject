@@ -98,10 +98,14 @@ class GraphService(BaseService):
         return grouped[["date", "rea"]].dropna()
 
     def retours_domicile_mensuels(
-        self, region=None, dep=None, start_date=None, end_date=None
+        self,
+        region: str | None = None,
+        dep: str | None = None,
+        start_date=None,
+        end_date=None,
     ):
         """
-        Nouveaux retours a domicile par mois
+        Nouvelles entrées en retours a domicile par mois
 
         Args :
             region (str | None): region
@@ -109,7 +113,7 @@ class GraphService(BaseService):
             start_date: date debut
             end_date: date fin
         Returns:
-            pandas.DataFrame: DataFrame des retour a domicile
+            pandas.DataFrame: DataFrame des reanimations
         """
         df = filter_by_geo(self.df, region=region, dep=dep)
         df = filter_by_date(df, start_date=start_date, end_date=end_date)

@@ -122,6 +122,15 @@ class DashboardMapComponent(BaseComponent):
                     end_date=end_date,
                 )
                 title = "Nombre total de personnes admises en réanimation"
+            elif stat_type == "rad":
+                map_html = self.service.retours_domicile_map_html(
+                    level=map_level,
+                    region=region,
+                    dep=dep,
+                    start_date=start_date,
+                    end_date=end_date,
+                )
+                title = "Retours à domicile totaux"
             else:
                 map_html = self.service.hospitalisations_map_html(
                     level=map_level,
@@ -135,13 +144,18 @@ class DashboardMapComponent(BaseComponent):
             return map_html, title
 
         for drom in self.drom_com:
+            self._create_drom_callback(app, drom["id"])
 
-            @app.callback(
-                Output(self.cid(f"drom-{drom['id']}"), "srcDoc"),
-                Input("SidebarComponent-stat-type", "value"),
+    def _create_drom_callback(self, app, drom_id):
+        """Créer un callback pour un DROM-COM spécifique"""
+
+        @app.callback(
+            Output(self.cid(f"drom-{drom_id}"), "srcDoc"),
+            Input("SidebarComponent-stat-type", "value"),
+            Input("SidebarComponent-date-range", "start_date"),
+            Input("SidebarComponent-date-range", "end_date"),
+        )
+        def update_drom_map(stat_type, start_date, end_date):
+            return self.service.drom_map_html(
+                drom_id, metric=stat_type, start_date=start_date, end_date=end_date
             )
-            def update_drom_map(stat_type, drom_id=drom["id"]):
-                if stat_type == "deces":
-                    return self.service.drom_map_html(drom_id, metric="deces")
-                else:
-                    return self.service.drom_map_html(drom_id, metric="hosp")

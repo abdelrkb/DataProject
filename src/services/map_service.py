@@ -317,7 +317,7 @@ class MapService(BaseService):
 
         agg_cols = [c for c in metrics_cols if c in df.columns]
         df = df.groupby(name_col, as_index=False)[agg_cols].sum()
-        
+
         if "incid_rea" in df.columns:
             df = df.rename(columns={"incid_rea": "rea"})
             agg_cols = ["rea"]
@@ -363,23 +363,17 @@ class MapService(BaseService):
         start_date: str | None = None,
         end_date: str | None = None,
     ) -> str:
-        """Carte des retours à domicile (sorties hospitalières)
-
-        Args:
-            level (str): "region" ou "dep" pour le niveau géographique
-            region (str | None): Filtrer par région spécifique
-            dep (str | None): Filtrer par département spécifique
-            start_date (str | None): Date de début pour le filtrage
-            end_date (str | None): Date de fin pour le filtrage
-        Returns:
-            str: HTML de la carte Folium
-        """
+        """Carte des retours à domicile (sorties hospitalières)"""
 
         df = filter_by_geo(self.df, region=region, dep=dep)
         df = filter_by_date(df, start_date=start_date, end_date=end_date)
 
-        metric_col = "rad"
-        labels = {"rad": "Retours à domicile"}
+        metrics_cols = ["incid_rad", "incid_hosp"]
+        labels = {
+            "incid_rad": "Total retours",
+            "incid_hosp": "Total hosp.",
+            "taux_retour": "Taux de retour (%)",
+        }
 
         if level == "dep":
             geojson = self.geojson_dep
@@ -390,21 +384,17 @@ class MapService(BaseService):
             name_col = "lib_reg"
             key_on = "feature.properties.nom"
 
-        df = (
-            df.groupby(name_col, as_index=False)[[metric_col]]
-            .sum()
-            .rename(columns={metric_col: "retours"})
-        )
+        agg_cols = [c for c in metrics_cols if c in df.columns]
+        df = df.groupby(name_col, as_index=False)[agg_cols].sum()
 
-        geojson = self._attach_properties(
-            geojson,
-            df,
-            name_col,
-            ["retours"],
-        )
+        df["taux_retour"] = (df["incid_rad"] / (df["incid_hosp"] + 1) * 100).round(1)
+        agg_cols.append("taux_retour")
 
-        tooltip_fields = ["nom", "retours"]
-        tooltip_aliases = ["Zone", labels["rad"]]
+        columns = [name_col, "incid_rad"]
+
+        geojson = self._attach_properties(geojson, df, name_col, agg_cols)
+        tooltip_fields = ["nom"] + agg_cols
+        tooltip_aliases = ["Zone"] + [labels.get(c, c) for c in agg_cols]
 
         FRANCE_BOUNDS = [[41.0, -5.5], [51.5, 9.5]]
         m = self._create_base_map(
@@ -417,7 +407,7 @@ class MapService(BaseService):
         choropleth = folium.Choropleth(
             geo_data=geojson,
             data=df,
-            columns=[name_col, "retours"],
+            columns=columns,
             key_on=key_on,
             fill_color="Greens",
             fill_opacity=0.7,
@@ -437,24 +427,33 @@ class MapService(BaseService):
         return m._repr_html_()
 
     def drom_map_html(
-        self, drom_id: str, metric: str = "hosp", use_choropleth: bool = True
+        self,
+        drom_id: str,
+        metric: str = "hosp",
+        start_date: str | None = None,
+        end_date: str | None = None,
+        use_choropleth: bool = True,
     ) -> str:
         """
         Créer une carte pour un DROM-COM spécifique
 
         Args:
             drom_id (str): Code département (971, 972, 973, 974, 976)
-            metric (str): (type de metrique pour la carte)
+            metric (str): 'hosp', 'rea', 'deces' ou 'rad'
+            start_date (str | None): Date de début pour le filtrage
+            end_date (str | None): Date de fin pour le filtrage
             use_choropleth (bool): Utiliser choropleth si GeoJSON disponible
 
         Returns:
             str: HTML de la carte Folium
         """
+        drom_id = str(drom_id)
         if drom_id not in self.drom_coords:
             return "<p>Carte non disponible</p>"
 
         drom_info = self.drom_coords[drom_id]
         df_drom = self.df[self.df["dep"] == drom_id].copy()
+        df_drom = filter_by_date(df_drom, start_date=start_date, end_date=end_date)
 
         m = self._create_base_map(
             center=drom_info["center"],
@@ -470,39 +469,111 @@ class MapService(BaseService):
         drom_geojson = self._load_drom_geojson(drom_id) if use_choropleth else None
 
         if drom_geojson and use_choropleth:
-            df_map = df_drom.groupby("lib_dep", as_index=False)[
-                ["incid_dchosp", "incid_hosp"]
-            ].sum()
+            if metric == "deces":
+                cols = ["incid_dchosp", "incid_hosp"]
+                color = "#fca5a5"
+            elif metric == "rea":
+                cols = ["incid_rea"] if "incid_rea" in df_drom.columns else ["rea"]
+                color = "#c4b5fd"
+            elif metric == "rad":
+                cols = ["incid_rad", "incid_hosp"]
+                color = "#86efac"
+            else:
+                cols = ["incid_hosp", "incid_dchosp"]
+                color = "#fed7aa"
+
+            df_map = df_drom.groupby("lib_dep", as_index=False)[cols].sum()
             df_map = df_map.reset_index(drop=True)
-            df_map["letalite"] = (
-                (df_map["incid_dchosp"] / (df_map["incid_hosp"] + 1)) * 100
-            ).round(1)
 
-            val_hosp = float(df_map["incid_hosp"].iloc[0])
-            val_deces = float(df_map["incid_dchosp"].iloc[0])
-            val_letalite = float(df_map["letalite"].iloc[0])
+            if "incid_dchosp" in df_map.columns and "incid_hosp" in df_map.columns:
+                df_map["letalite"] = (
+                    (df_map["incid_dchosp"] / (df_map["incid_hosp"] + 1)) * 100
+                ).round(1)
 
-            geojson_with_data = json.loads(json.dumps(drom_geojson))
-            for feature in geojson_with_data.get("features", []):
-                feature["properties"]["incid_hosp"] = val_hosp
-                feature["properties"]["incid_dchosp"] = val_deces
-                feature["properties"]["letalite"] = val_letalite
+            if "incid_rad" in df_map.columns and "incid_hosp" in df_map.columns:
+                df_map["taux_retour"] = (
+                    (df_map["incid_rad"] / (df_map["incid_hosp"] + 1)) * 100
+                ).round(1)
 
-            folium.GeoJson(
-                geojson_with_data,
+            values_to_inject = {}
+            for col in df_map.columns:
+                if col != "lib_dep":
+                    values_to_inject[col] = float(df_map[col].iloc[0])
+
+            geojson_copy = json.loads(json.dumps(drom_geojson))
+
+            tooltip_lines = [f"<b>{drom_info['name']}</b>"]
+
+            if "incid_hosp" in values_to_inject:
+                tooltip_lines.append(
+                    f"<b>Total hosp.:</b> {values_to_inject['incid_hosp']:,.0f}"
+                )
+
+            if "incid_dchosp" in values_to_inject:
+                tooltip_lines.append(
+                    f"<b>Total décès:</b> {values_to_inject['incid_dchosp']:,.0f}"
+                )
+
+            if "incid_rea" in values_to_inject:
+                tooltip_lines.append(
+                    f"<b>Total réa:</b> {values_to_inject['incid_rea']:,.0f}"
+                )
+
+            if "rea" in values_to_inject and "incid_rea" not in values_to_inject:
+                tooltip_lines.append(
+                    f"<b>Patients en réa:</b> {values_to_inject['rea']:,.0f}"
+                )
+
+            if "incid_rad" in values_to_inject:
+                tooltip_lines.append(
+                    f"<b>Total retours:</b> {values_to_inject['incid_rad']:,.0f}"
+                )
+
+            if "letalite" in values_to_inject:
+                tooltip_lines.append(
+                    f"<b>Létalité:</b> {values_to_inject['letalite']:.1f}%"
+                )
+
+            if "taux_retour" in values_to_inject:
+                tooltip_lines.append(
+                    f"<b>Taux retour:</b> {values_to_inject['taux_retour']:.1f}%"
+                )
+
+            tooltip_html = "<br>".join(tooltip_lines)
+
+            geojson_layer = folium.GeoJson(
+                geojson_copy,
                 style_function=lambda x: {
-                    "fillColor": "#fca5a5" if metric == "deces" else "#fed7aa",
+                    "fillColor": color,
                     "color": "#999",
                     "weight": 1,
                     "fillOpacity": 0.6,
                 },
-            ).add_to(m)
+                tooltip=folium.Tooltip(tooltip_html),
+            )
+            geojson_layer.add_to(m)
 
         else:
             if metric == "deces":
                 total = df_drom["incid_dchosp"].sum()
                 color = "red"
                 label = "décès"
+            elif metric == "rea":
+                total = (
+                    df_drom["incid_rea"].sum()
+                    if "incid_rea" in df_drom.columns
+                    else df_drom["rea"].sum()
+                    if "rea" in df_drom.columns
+                    else 0
+                )
+                color = "purple"
+                label = "réa"
+            elif metric == "rad":
+                total = (
+                    df_drom["incid_rad"].sum() if "incid_rad" in df_drom.columns else 0
+                )
+                color = "green"
+                label = "retours"
             else:
                 total = df_drom["incid_hosp"].sum()
                 color = "orange"
