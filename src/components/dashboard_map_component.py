@@ -98,28 +98,46 @@ class DashboardMapComponent(BaseComponent):
             Input("SidebarComponent-region", "value"),
             Input("SidebarComponent-dep", "value"),
             Input("SidebarComponent-stat-type", "value"),
+            Input("SidebarComponent-date-range", "start_date"),
+            Input("SidebarComponent-date-range", "end_date"),
         )
-        def update_main_map(level, region, dep, stat_type):
+        def update_main_map(level, region, dep, stat_type, start_date, end_date):
             map_level = "dep" if level == "dep" else "region"
 
             if stat_type == "deces":
                 map_html = self.service.deces_map_html(
-                    level=map_level, region=region, dep=dep
+                    level=map_level,
+                    region=region,
+                    dep=dep,
+                    start_date=start_date,
+                    end_date=end_date,
                 )
                 title = "Décès hospitaliers totaux"
             elif stat_type == "rea":
                 map_html = self.service.reanimations_map_html(
-                    level=map_level, region=region, dep=dep
+                    level=map_level,
+                    region=region,
+                    dep=dep,
+                    start_date=start_date,
+                    end_date=end_date,
                 )
                 title = "Réanimations"
             elif stat_type == "rad":
                 map_html = self.service.retours_domicile_map_html(
-                    level=map_level, region=region, dep=dep
+                    level=map_level,
+                    region=region,
+                    dep=dep,
+                    start_date=start_date,
+                    end_date=end_date,
                 )
                 title = "Retours à domicile totaux"
             else:
                 map_html = self.service.hospitalisations_map_html(
-                    level=map_level, region=region, dep=dep
+                    level=map_level,
+                    region=region,
+                    dep=dep,
+                    start_date=start_date,
+                    end_date=end_date,
                 )
                 title = "Hospitalisations totales"
 
