@@ -27,7 +27,6 @@ def clean_data(save=True):
     df = df.dropna(subset=["dep", "date"])
     df = df[df["dep"] != "00"]
 
-    # Taux de mortalité basé sur un ratio flux/flux (décès / hospitalisations)
     if "incid_dchosp" in df.columns and "incid_hosp" in df.columns:
         df["taux_mortalite"] = df["incid_dchosp"] / (df["incid_hosp"] + 1) * 100
     else:
