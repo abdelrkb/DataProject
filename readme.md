@@ -352,6 +352,8 @@ La configuration de Ruff se trouve dans `pyproject.toml` :
 
 Une GitHub Action (`/.github/workflows/ci.yml`) vérifie automatiquement le code sur chaque Pull Request vers `main`.
 
+Voir le Contributing.MD pour plus d'informations sur la qualité de code.
+
 ---
 ## 📈 Rapport d'analyse
 
