@@ -18,35 +18,33 @@ class SidebarComponent(BaseComponent):
         self.stat_types = {
             "hosp": {
                 "label": "Nouvelles hospitalisations",
+                "hist_label": "Fréquence des hospitalisations quotidiennes",
                 "graph_method": self.graph_service.hospitalisations,
                 "hist_method": self.histogram_service.nouvelles_hosp_par_mois,
                 "graph_col": "hosp",
-                "hist_col": "hosp",
+                "hist_x_col": "hosp",
+                "hist_y_col": "count",
                 "unit": "hospitalisations",
             },
             "rea": {
                 "label": "Nouvelles entrées en réanimation",
+                "hist_label": "Fréquence des entrées en réa quotidiennes",
                 "graph_method": self.graph_service.reanimations_mensuelles,
                 "hist_method": self.histogram_service.reanimations_par_mois,
                 "graph_col": "rea",
-                "hist_col": "rea",
+                "hist_x_col": "rea",
+                "hist_y_col": "count",
                 "unit": "patients",
             },
             "deces": {
                 "label": "Décès hospitaliers",
+                "hist_label": "Fréquence des décès quotidiens",
                 "graph_method": self.graph_service.deces_temporel,
                 "hist_method": self.histogram_service.deces_par_mois,
                 "graph_col": "dchosp",
-                "hist_col": "incid_dchosp",
+                "hist_x_col": "incid_dchosp",
+                "hist_y_col": "count",
                 "unit": "décès",
-            },
-            "rad": {
-                "label": "Retours à domicile",
-                "graph_method": self.graph_service.retours_domicile_mensuels,
-                "hist_method": self.histogram_service.retours_domicile_par_mois,
-                "graph_col": "rad",
-                "hist_col": "retours",
-                "unit": "retours",
             },
         }
 
@@ -177,7 +175,7 @@ class SidebarComponent(BaseComponent):
                 html.Div(
                     [
                         html.Div(
-                            "Total par mois",
+                            "Histogramme",
                             className="graph-title",
                             id=self.cid("hist-title"),
                         ),
@@ -228,15 +226,14 @@ class SidebarComponent(BaseComponent):
                 df = config["graph_method"](
                     region=region, start_date=start_date, end_date=end_date
                 )
-                title = f"{config['label']}"
             elif level == "dep" and dep:
                 df = config["graph_method"](
                     dep=dep, start_date=start_date, end_date=end_date
                 )
-                title = f"{config['label']}"
             else:
                 df = config["graph_method"](start_date=start_date, end_date=end_date)
-                title = f"{config['label']}"
+
+            title = config["label"]
 
             fig = go.Figure(
                 data=[
@@ -264,6 +261,7 @@ class SidebarComponent(BaseComponent):
                     gridcolor="#f3f4f6",
                     showline=False,
                     tickfont=dict(size=10),
+                    separatethousands=True,
                 ),
                 plot_bgcolor="white",
                 paper_bgcolor="white",
@@ -289,21 +287,20 @@ class SidebarComponent(BaseComponent):
                 df = config["hist_method"](
                     region=region, start_date=start_date, end_date=end_date
                 )
-                title = "Total par mois"
             elif level == "dep" and dep:
                 df = config["hist_method"](
                     dep=dep, start_date=start_date, end_date=end_date
                 )
-                title = "Total par mois"
             else:
                 df = config["hist_method"](start_date=start_date, end_date=end_date)
-                title = "Total par mois"
+
+            title = config["hist_label"]
 
             fig = go.Figure(
                 data=[
                     go.Bar(
-                        x=df.get("mois", df.index),
-                        y=df[config["hist_col"]],
+                        x=df[config["hist_x_col"]],
+                        y=df[config["hist_y_col"]],
                         marker_color="#ef4444",
                     )
                 ]
@@ -323,6 +320,7 @@ class SidebarComponent(BaseComponent):
                     gridcolor="#f3f4f6",
                     showline=False,
                     tickfont=dict(size=10),
+                    separatethousands=True,
                 ),
                 plot_bgcolor="white",
                 paper_bgcolor="white",
