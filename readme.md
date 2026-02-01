@@ -90,6 +90,59 @@ src/
 - DataStore centralisé (chargement unique)
 - Callbacks modulaires par component
 
+
+### Qualité de code
+
+Le projet utilise **Ruff** pour garantir la qualité et la cohérence du code.
+
+#### Installation des outils de développement
+```bash
+pip install -r requirements-dev.txt
+```
+
+#### Ruff - Linter et formateur
+
+**Ruff** est un linter Python ultra-rapide qui remplace flake8, isort et black.
+
+**Vérifier le code :**
+```bash
+ruff check .
+```
+
+**Corriger automatiquement :**
+```bash
+ruff check . --fix
+```
+
+**Formater le code :**
+```bash
+ruff format .
+```
+
+#### Pre-commit hooks
+
+Le projet utilise **pre-commit** pour vérifier automatiquement le code avant chaque commit.
+
+**Installer les hooks :**
+```bash
+pre-commit install
+```
+
+Les hooks s'exécuteront automatiquement à chaque `git commit` et bloqueront le commit si le code ne respecte pas les standards.
+
+#### Configuration
+
+La configuration de Ruff se trouve dans `pyproject.toml` :
+- **Target** : Python 3.13
+- **Line length** : 88 caractères (standard Black)
+- **Rules** : Erreurs de syntaxe (E4, E7, E9) et erreurs Python (F)
+
+#### CI/CD
+
+Une GitHub Action (`/.github/workflows/ci.yml`) vérifie automatiquement le code sur chaque Pull Request vers `main`.
+
+Voir le Contributing.MD pour plus d'informations sur la qualité de code.
+
 ---
 
 ## Analyse des données
